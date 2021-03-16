@@ -32,7 +32,7 @@ def respond_ics(stu_id: int):
 						enable_geo=with_geo, 
 						start_day=START_DAY)
 	if data:
-		return data
+		return Response(response=data, mimetype="application/octet-stream")
 	else:
 		return Response(status=400, response="Bad Request")
 
