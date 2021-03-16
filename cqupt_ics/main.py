@@ -59,14 +59,16 @@ def exam_schedule(student_id: int):
 
 def get_ics(student_id: int, mode: int, enable_geo: bool = True, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
-	now_week = 0;
+	now_week = 0
 	classes = []
 	if mode & ICS_CLASS:
-		temp, now_week = class_schedule(student_id)
+		temp, temp2 = class_schedule(student_id)
+		now_week = max(now_week, temp2)
 		classes += temp
 		logging.debug(f"获得 {len(temp)} 个课程{''.join([f'【{i[1]}】' for i in temp])}\n")
 	if mode & ICS_EXAM:
-		temp, now_week = exam_schedule(student_id)
+		temp, temp2 = exam_schedule(student_id)
+		now_week = max(now_week, temp2)
 		classes += temp
 		logging.debug(f"获得 {len(temp)} 个考试{''.join([f'【{i[1]}】' for i in temp])}\n")
 
