@@ -91,30 +91,30 @@ def get_ics(student_id: int, mode: int, enable_geo: bool = True, start_day: date
 		weeks.append(single_week)
 
 	iCal = """BEGIN:VCALENDAR
-	METHOD:PUBLISH
-	VERSION:2.0
-	X-WR-CALNAME:课表
-	PRODID:-//Apple Inc.//macOS 11.2.3//EN
-	X-APPLE-CALENDAR-COLOR:#711A76
-	X-WR-TIMEZONE:Asia/Shanghai
-	CALSCALE:GREGORIAN
-	BEGIN:VTIMEZONE
-	TZID:Asia/Shanghai
-	BEGIN:STANDARD
-	TZOFFSETFROM:+0900
-	RRULE:FREQ=YEARLY;UNTIL=19910914T170000Z;BYMONTH=9;BYDAY=3SU
-	DTSTART:19890917T020000
-	TZNAME:GMT+8
-	TZOFFSETTO:+0800
-	END:STANDARD
-	BEGIN:DAYLIGHT
-	TZOFFSETFROM:+0800
-	DTSTART:19910414T020000
-	TZNAME:GMT+8
-	TZOFFSETTO:+0900
-	RDATE:19910414T020000
-	END:DAYLIGHT
-	END:VTIMEZONE"""
+METHOD:PUBLISH
+VERSION:2.0
+X-WR-CALNAME:课表
+PRODID:-//Apple Inc.//macOS 11.2.3//EN
+X-APPLE-CALENDAR-COLOR:#711A76
+X-WR-TIMEZONE:Asia/Shanghai
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Asia/Shanghai
+BEGIN:STANDARD
+TZOFFSETFROM:+0900
+RRULE:FREQ=YEARLY;UNTIL=19910914T170000Z;BYMONTH=9;BYDAY=3SU
+DTSTART:19890917T020000
+TZNAME:GMT+8
+TZOFFSETTO:+0800
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0800
+DTSTART:19910414T020000
+TZNAME:GMT+8
+TZOFFSETTO:+0900
+RDATE:19910414T020000
+END:DAYLIGHT
+END:VTIMEZONE"""
 
 	for _class in classes:
 		custom_geo = ""
@@ -148,17 +148,17 @@ def get_ics(student_id: int, mode: int, enable_geo: bool = True, start_day: date
 			start_time = class_start_time.strftime('%Y%m%dT%H%M%S')
 			end_time = class_end_time.strftime('%Y%m%dT%H%M%S')
 			single_event = f"""
-	BEGIN:VEVENT
-	DTEND;TZID=Asia/Shanghai:{end_time}
-	DESCRIPTION:{description}
-	UID:{uid_generate()}
-	DTSTAMP:{runtime}
-	URL;VALUE=URI:{custom_geo}
-	X-APPLE-TRAVEL-ADVISORY-BEHAVIOR:AUTOMATIC
-	SUMMARY:{title}
-	CREATED:{runtime}
-	DTSTART;TZID=Asia/Shanghai:{start_time}
-	END:VEVENT"""
+BEGIN:VEVENT
+DTEND;TZID=Asia/Shanghai:{end_time}
+DESCRIPTION:{description}
+UID:{uid_generate()}
+DTSTAMP:{runtime}
+URL;VALUE=URI:{custom_geo}
+X-APPLE-TRAVEL-ADVISORY-BEHAVIOR:AUTOMATIC
+SUMMARY:{title}
+CREATED:{runtime}
+DTSTART;TZID=Asia/Shanghai:{start_time}
+END:VEVENT"""
 			iCal += single_event
 	iCal += "\nEND:VCALENDAR"
 	return iCal
