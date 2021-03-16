@@ -52,53 +52,47 @@ iCalendar 是广泛使用的日历数据交换标准，在诸如 Apple 日历、
 
 * 本代码需要使用 **Python 3**。
 
-* 如要使用课表对比或教学楼定位功能，dependencies.py 为必要。
-
 * 依赖于 [requests](https://github.com/psf/requests) 库，最简单的方式是使用 pip 安装。
 
   ```
-  pip3 install requests
+  pip3 install -r requirements.txt
+  ```
+
+* 服务器版还依赖于 [Flask](https://github.com/pallets/flask) 库，最简单的方式是使用 pip 安装。
+
+  ```
+  pip3 install -r requirements_server.txt
   ```
 
 #### 运行
 
-**只需要修改代码头部的学号，即可正常运行。**
+**只需要在终端中传入学号，即可正常运行。**
+**默认输出到 stdout，可以通过 `-o` 参数指定，例如**
 
 ```
-python3 CQUPT-ics.py
+python3 cli.py -o cqupt.ics 2020xxxxxx
 ```
+
+可以通过传入 `-h` 或 `--help` 参数查看更多帮助。
 
 对于生成的 .ics 文件，通常只需打开即可导入（Windows、macOS、Android），对于 iOS 和 iPadOS 用户，需使用 AirDrop 将文件传到设备，或者想办法通过 Safari 浏览器访问此文件。
-
-#### 自定义运行
-
-如有意修改代码运作方式，在代码头部，你将看到几个参数：
-
-```python
-studentNum = 2020220202    # 你的学号
-saveLoc    = "cqupt.ics"   # 文件输出目录，可填写相对路径
-mode       = 3             # 模式选择: 1 仅课程，2 仅考试，3 课程+考试
-reporting  = True          # 启用多次运行时课表对比功能
-enableGEO  = True          # 启用教学楼定位功能
-```
-
-reporting：是否启用课表对比功能，启用时将在代码目录生成 classes.txt（和可能的用于显示课表差异的 classdiff.html）。
-
-enableGEO：是否启用教学楼定位功能，启用后将在日历项中标记教学楼位置（非 Apple 日历将仅会显示地点名称，Apple 日历则可以精确定位到地图 GPS），无论是否启用，在日历的标题中都会包含教室名，例如「高等数学 - 5401」。
 
 \-
 
 ## 服务端使用与日历订阅
 
-对于进阶用户，你可能有自己的服务器，希望通过周期性的运行此代码，自动获得最新的课表并创建 iCalendar 订阅，这样，你的设备也将定期向服务器刷新课表，自动获得课表更新。
+对于进阶用户，你可能有自己的服务器，希望运行此代码，自动获得最新的课表并创建 iCalendar 订阅，这样，你的设备也将定期向服务器刷新课表，自动获得课表更新。
 
 本代码完全兼容服务端使用，经测试，**Apple 日历、Google Calendar、Outlook Calendar 均支持本代码生成的 ics**，同样也支持订阅本代码生成的 ics。
 
 ![](images/subscribe.png)
 
-因此，你可以直接配合 crontab 周期运行此代码。你可以将输出的 ics 目录调整到如 /var/www/html 中，这样你便可以使用一个固定的 URL 访问此 ics 文件。
+因此，你可以直接运行 `wsgi.py` 或通过 uWSGI 运行这个程序，或者使用 Docker 镜像。你可以通过 `START_DAY` 环境变量传入 `YYYY-MM-dd` 格式的开学日期以防不能正常获取。启动后，你只需请求 `/<学号>.icns` 即可。
 
-接下来，打开你使用的日历 app，通常他们都支持订阅日历，输入此 URL 即可，部分日历软件支持自行设置刷新频率，并配合服务端的 crontab 运行频率，以获得全自动的日历订阅。
+一些 GET 参数：
+ * `class`: 默认为 1，传入 0 可去除课程
+ * `exam`: 默认为 1，传入 0 可去除考试信息
+ * `geo`: 默认为 1，传入 0 可去除定位信息
 
 **iOS 和 iPadOS 用户**：要添加日历订阅，请打开「设置」—「日历」—「账户」—「添加账户」—「其他」—「添加已订阅的日历」，然后在「服务器」中输入 ics 的 URL 地址。通过 Safari 直接打开 ics 的 URL 地址**只会导入**此日历中的全部日历项到已有的日历中，不会创建日历订阅。
 
@@ -106,6 +100,6 @@ enableGEO：是否启用教学楼定位功能，启用后将在日历项中标�
 
 ## 问题反馈与联系
 
-* 看我的课表来找我
+* 看作者的课表来找作者
 * 直接提交 Issue
-* Telegram [@shunitsu](https://t.me/shunitsu)
+* Telegram [@shunitsu](https://t.me/shunitsu) 或 [@qwqVictor](https://t.me/qwqVictor)
