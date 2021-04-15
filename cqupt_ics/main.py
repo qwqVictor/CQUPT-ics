@@ -1,5 +1,6 @@
 import requests
 import logging
+import providers
 from cqupt_ics.location import get_location
 from cqupt_ics.report import report
 from random import sample
@@ -9,70 +10,35 @@ ICS_CLASS = 1
 ICS_EXAM = 2
 ICS_ALL = ICS_CLASS | ICS_EXAM
 
-APIROOT = "https://cyxbsmobile.redrock.team/api"
-HEADERS = {"User-Agent": "zhang shang zhong you/6.0.3 (iPhone; iOS 14.4.1; Scale/3.00)"}
-
 requests.packages.urllib3.disable_warnings()
 
 uid_generate = lambda: "-".join(map(lambda l: ''.join(sample("0123456789ABCDEF", l)), [8, 4, 4, 4, 12]))
 
-def class_schedule(student_id: int):
-	data = {"stu_num": student_id}
-	try: 
-		r = requests.post(url = APIROOT + '/kebiao', data = data, headers = HEADERS, verify = False, timeout = 10)
-		r.raise_for_status()
-		response_json = r.json()
-	except requests.exceptions.Timeout:
-		logging.debug("课表请求超时")
-	except requests.exceptions.HTTPError as err:
-		err_code = err.response.status_code
-		logging.debug(f"课表请求返回了 HTTP {err_code} 错误")
-	except:
-		logging.debug("课表请求发生了其他网络错误")
-	else:
-		try:
-			course = [["CLASS", _Class["course"], _Class["teacher"], _Class["type"], _Class["rawWeek"], _Class["classroom"], _Class["course_num"], 
-				_Class["week"], _Class["hash_day"] + 1, [_Class["begin_lesson"], _Class["begin_lesson"] + _Class["period"] - 1]] for _Class in response_json["data"]]
-		except:
-			return [], 0
-		return course, response_json["nowWeek"]
-	return [], 0
-
-def exam_schedule(student_id: int):
-	data = {"stuNum": student_id}
-	try: 
-		r = requests.post(url = APIROOT + '/examSchedule', data = data, headers = HEADERS, verify = False, timeout = 10)
-		r.raise_for_status()
-		response_json = r.json()
-	except requests.exceptions.Timeout:
-		logging.debug("考试请求超时")
-	except requests.exceptions.HTTPError as err:
-		err_code = err.response.status_code
-		logging.debug(f"考试请求返回了 HTTP {err_code} 错误")
-	except:
-		logging.debug("考试请求发生了其他网络错误")
-	else:
-		tests = [["TEST", _Test["course"], _Test["begin_time"], _Test["end_time"], _Test["status"], _Test["classroom"], _Test["type"],
-			[int(_Test["week"])], int(_Test["weekday"]), _Test["seat"]] for _Test in response_json["data"]]
-		return tests, response_json["nowWeek"]
-	return [], 0
-
-def get_ics(student_id: int, mode: int, enable_geo: bool = True, start_day: datetime = datetime(1970, 1, 1)):
+def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
 	now_week = 0
 	classes = []
+	error_msgs = []
 	if mode & ICS_CLASS:
-		temp, temp2 = class_schedule(student_id)
-		now_week = max(now_week, temp2)
-		classes += temp
-		logging.debug(f"获得 {len(temp)} 个课程{''.join([f'【{i[1]}】' for i in temp])}\n")
+		classlist, now_week_raw, error_msg = provider.class_schedule(student_id)
+		if error_msg != None:
+			logging.debug(error_msg)
+			error_msgs.append(error_msg)
+		now_week = max(now_week, now_week_raw)
+		classes += classlist
+		logging.debug(f"获得 {len(classlist)} 个课程{''.join([f'【{i[1]}】' for i in classlist])}\n")
 	if mode & ICS_EXAM:
-		temp, temp2 = exam_schedule(student_id)
-		now_week = max(now_week, temp2)
-		classes += temp
-		logging.debug(f"获得 {len(temp)} 个考试{''.join([f'【{i[1]}】' for i in temp])}\n")
+		classlist, now_week_raw, error_msg = provider.exam_schedule(student_id)
+		if error_msg != None:
+			logging.debug(error_msg)
+			error_msgs.append(error_msg)
+		now_week = max(now_week, now_week_raw)
+		classes += classlist
+		logging.debug(f"获得 {len(classlist)} 个考试{''.join([f'【{i[1]}】' for i in classlist])}\n")
 
 	if not len(classes):
+		if len(error_msgs):
+			raise Exception(", ".join(error_msgs))
 		return ''
 
 	if now_week != 0:

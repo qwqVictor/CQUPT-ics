@@ -42,7 +42,9 @@ iCalendar 是广泛使用的日历数据交换标准，在诸如 Apple 日历、
 
 #### 自动获取本学期的校历信息
 
-代码将从当前校历周分析出校历第一周日期，以此为起点生成课表，无需手动指定本学期的起始时间。
+代码将从当前校历周分析出校历第一周日期，以此为起点生成课表，通常无需手动指定本学期的起始时间。
+
+但有些极为特殊的时候，程序可能不能正常分析。这时候你也可以自行指定，方法见下方说明。
 
 \-
 
@@ -75,6 +77,12 @@ python3 cli.py -o cqupt.ics 2020xxxxxx
 
 可以通过传入 `-h` 或 `--help` 参数查看更多帮助。
 
+若需要手动指定学期开始的第一个周一的日期，请传入 `--start-day` 参数，并使用 `YYYY-MM-dd` 格式，例如：
+
+```
+python3 cli.py -o cqupt.ics 2020xxxxxx --start-day 2020-03-01
+```
+
 对于生成的 .ics 文件，通常只需打开即可导入（Windows、macOS、Android），对于 iOS 和 iPadOS 用户，需使用 AirDrop 将文件传到设备，或者想办法通过 Safari 浏览器访问此文件。
 
 \-
@@ -87,7 +95,12 @@ python3 cli.py -o cqupt.ics 2020xxxxxx
 
 ![](images/subscribe.png)
 
-因此，你可以直接运行 `wsgi.py` 或通过 uWSGI 运行这个程序，或者使用 Docker 镜像。你可以通过 `START_DAY` 环境变量传入 `YYYY-MM-dd` 格式的开学日期以防不能正常获取。启动后，你只需请求 `/<学号>.icns` 即可。
+因此，你可以直接运行 `wsgi.py` 或通过 uWSGI 运行这个程序，或者使用 Docker 镜像。你可以通过 `START_DAY` 环境变量传入 `YYYY-MM-dd` 格式的开学日期以防不能正常获取。启动后，你只需请求 `/<学号>.ics` 即可。
+
+例如：
+```
+http://127.0.0.1:2021/2020xxxxxx.ics
+```
 
 一些 GET 参数：
  * `class`: 默认为 1，传入 0 可去除课程

@@ -12,7 +12,7 @@ parser.add_argument("--disable-class", help="Disable class information in ICS fi
 parser.add_argument("--disable-geo", help="Disable location data in ICS File", default=False, action='store_true')
 parser.add_argument("--start-day", type=str, help="Specify the first Monday the term starts, in format YYYY-MM-dd. E.g: 1970-01-01", default="1970-01-01")
 
-def main(argv):
+def main():
 	config = parser.parse_args()
 	writer = sys.stdout.write
 	f = None
@@ -30,12 +30,16 @@ def main(argv):
 	start_day_tuple = ()
 	for i in config.start_day.split('-'):
 		start_day_tuple += (int(i),)
-	data = cqupt_ics.get_ics(student_id=config.student_id, mode=mode, 
-						enable_geo=(not config.disable_geo), 
-						start_day=datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_tuple[2]))
-	writer(data)
+	try:
+		data = cqupt_ics.get_ics(student_id=config.student_id, mode=mode, 
+							enable_geo=(not config.disable_geo), 
+							start_day=datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_tuple[2]))
+		writer(data)
+	except Exception as e:
+		sys.std.err.write("发生了异常：" + e.args[0])
+
 	if f:
 		f.close()
 			
 if __name__ == "__main__":
-	main(sys.argv)
+	main()

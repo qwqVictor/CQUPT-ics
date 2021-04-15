@@ -27,14 +27,14 @@ def respond_ics(stu_id: int):
 	with_exam = bool(int(request.args.get('exam', True)))
 	with_geo= bool(int(request.args.get('geo', True)))
 
-	data = cqupt_ics.get_ics(student_id=stu_id, 
+	try:
+		data = cqupt_ics.get_ics(student_id=stu_id, 
 						mode=((with_exam * cqupt_ics.ICS_EXAM) | (with_class * cqupt_ics.ICS_CLASS)), 
 						enable_geo=with_geo, 
 						start_day=START_DAY)
-	if data:
 		return Response(response=data, mimetype="application/octet-stream")
-	else:
-		return Response(status=400, response="Bad Request")
+	except Exception as e:
+		return Response(status=503, response=e.args[0])
 
 def main(argv=[]):
 	app.run(host="0.0.0.0", port=PORT)
