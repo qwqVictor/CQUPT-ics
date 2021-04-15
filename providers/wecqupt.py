@@ -83,7 +83,6 @@ class WeCQUPTProvider(ProviderBaseType):
 					sample = response_json["data"][0]
 					now_week = int(int(sample["week"]) + (int(sample["days"]) / abs(int(sample["days"]))) * (abs(int(sample["days"])) // 7))
 				return tests, now_week, None
-			except Exception as e:
-				print(e.args[0])
+			except:
 				return [], 0, "数据异常"
 		return [], 0, error_msg
