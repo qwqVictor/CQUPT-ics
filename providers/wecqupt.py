@@ -18,7 +18,7 @@ class WeCQUPTProvider(ProviderBaseType):
 		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
 		try: 
-			r = requests.post(url = WeCQUPTProvider.APIROOT + '/get_kebiao.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 10)
+			r = requests.post(url = WeCQUPTProvider.APIROOT + '/get_kebiao.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 1)
 			r.raise_for_status()
 			response_json = r.json()
 		except requests.exceptions.Timeout:

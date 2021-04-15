@@ -10,7 +10,7 @@ class RedrockProvider(ProviderBaseType):
 		error_msg = ""
 		data = {"stu_num": student_id}
 		try: 
-			r = requests.post(url = RedrockProvider.APIROOT + '/kebiao', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 10)
+			r = requests.post(url = RedrockProvider.APIROOT + '/kebiao', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 1)
 			r.raise_for_status()
 			response_json = r.json()
 		except requests.exceptions.Timeout:
