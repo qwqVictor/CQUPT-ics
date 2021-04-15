@@ -3,6 +3,7 @@ import datetime
 import sys
 import os
 import cqupt_ics
+import providers
 from flask import Flask, request, Response
 from urllib.parse import unquote
 
@@ -23,18 +24,34 @@ app = Flask(__name__)
 
 @app.route("/<int:stu_id>.ics", methods=['GET'])
 def respond_ics(stu_id: int):
-	with_class= bool(int(request.args.get('class', True)))
+	with_class = bool(int(request.args.get('class', True)))
 	with_exam = bool(int(request.args.get('exam', True)))
-	with_geo= bool(int(request.args.get('geo', True)))
+	with_geo = bool(int(request.args.get('geo', True)))
+	provider_name = request.args.get('provider', None)
+	err = None
 
+	provider_list = []
 	try:
-		data = cqupt_ics.get_ics(student_id=stu_id, 
-						mode=((with_exam * cqupt_ics.ICS_EXAM) | (with_class * cqupt_ics.ICS_CLASS)), 
-						enable_geo=with_geo, 
-						start_day=START_DAY)
-		return Response(response=data, mimetype="application/octet-stream")
-	except Exception as e:
-		return Response(status=503, response=e.args[0])
+		if provider_name:
+			provider_list.append(providers.providers[provider_name])
+		else:
+			for key in providers.providers:
+				provider_list.append(providers.providers[key])
+	except:
+		return Response(status=400, response="请求了无效的数据源")
+
+	for provider in provider_list:
+		provider: providers.ProviderBaseType
+		try:
+			data = cqupt_ics.get_ics(student_id=stu_id, 
+							mode=((with_exam * cqupt_ics.ICS_EXAM) | (with_class * cqupt_ics.ICS_CLASS)), 
+							enable_geo=with_geo, 
+							provider=provider,
+							start_day=START_DAY)
+			return Response(response=data, mimetype="application/octet-stream")
+		except Exception as e:
+			err = e
+	return Response(status=503, response=err.args[0])
 
 def main(argv=[]):
 	app.run(host="0.0.0.0", port=PORT)
