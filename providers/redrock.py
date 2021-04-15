@@ -25,8 +25,11 @@ class RedrockProvider(ProviderBaseType):
 			logging.debug(error_msg)
 		else:
 			try:
-				course = [["CLASS", _Class["course"], _Class["teacher"], _Class["type"], _Class["rawWeek"], _Class["classroom"], _Class["course_num"], 
-					_Class["week"], _Class["hash_day"] + 1, [_Class["begin_lesson"], _Class["begin_lesson"] + _Class["period"] - 1]] for _Class in response_json["data"]]
+				course = [
+						["CLASS", 
+							_Class["course"], _Class["teacher"], _Class["type"], _Class["rawWeek"], _Class["classroom"], _Class["course_num"], _Class["week"], _Class["hash_day"] + 1, 
+							[_Class["begin_lesson"], _Class["begin_lesson"] + _Class["period"] - 1]
+						] for _Class in response_json["data"]]
 			except:
 				return [], 0, "数据异常"
 			return course, response_json["nowWeek"], None
@@ -51,8 +54,11 @@ class RedrockProvider(ProviderBaseType):
 			logging.debug(error_msg)
 		else:
 			try:
-				tests = [["TEST", _Test["course"], _Test["begin_time"], _Test["end_time"], _Test["status"], _Test["classroom"], _Test["type"],
-				[int(_Test["week"])], int(_Test["weekday"]), _Test["seat"]] for _Test in response_json["data"]]
+				tests = [
+					["TEST", 
+						_Test["course"], _Test["begin_time"], _Test["end_time"], _Test["status"], _Test["classroom"], _Test["type"],
+						[int(_Test["week"])], int(_Test["weekday"]), _Test["seat"]
+					] for _Test in response_json["data"]]
 				return tests, response_json["nowWeek"], None
 			except:
 				return [], 0, "数据异常"
