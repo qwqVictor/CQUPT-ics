@@ -1,9 +1,9 @@
 import requests
 import logging
 import providers
+import hashlib
 from cqupt_ics.location import get_location
 from cqupt_ics.report import report
-from random import sample
 from datetime import datetime, timedelta
 
 ICS_CLASS = 1
@@ -11,8 +11,6 @@ ICS_EXAM = 2
 ICS_ALL = ICS_CLASS | ICS_EXAM
 
 requests.packages.urllib3.disable_warnings()
-
-uid_generate = lambda: "-".join(map(lambda l: ''.join(sample("0123456789ABCDEF", l)), [8, 4, 4, 4, 12]))
 
 def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
@@ -119,7 +117,7 @@ END:VTIMEZONE"""
 BEGIN:VEVENT
 DTEND;TZID=Asia/Shanghai:{end_time}
 DESCRIPTION:{description}
-UID:{uid_generate()}
+UID:CQUPT-{hashlib.md5(str(str(class_id) + str(start_time) + str(end_time)).encode('utf-8')).hexdigest()}
 DTSTAMP:{runtime}
 URL;VALUE=URI:{custom_geo}
 X-APPLE-TRAVEL-ADVISORY-BEHAVIOR:AUTOMATIC
