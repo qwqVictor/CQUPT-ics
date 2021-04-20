@@ -10,9 +10,38 @@ ICS_CLASS = 1
 ICS_EXAM = 2
 ICS_ALL = ICS_CLASS | ICS_EXAM
 
+ICS_HEADER = """BEGIN:VCALENDAR
+METHOD:PUBLISH
+VERSION:2.0
+X-WR-CALNAME:课表
+PRODID:-//Apple Inc.//macOS 11.2.3//EN
+X-APPLE-CALENDAR-COLOR:#711A76
+X-WR-TIMEZONE:Asia/Shanghai
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Asia/Shanghai
+BEGIN:STANDARD
+TZOFFSETFROM:+0900
+RRULE:FREQ=YEARLY;UNTIL=19910914T170000Z;BYMONTH=9;BYDAY=3SU
+DTSTART:19890917T020000
+TZNAME:GMT+8
+TZOFFSETTO:+0800
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0800
+DTSTART:19910414T020000
+TZNAME:GMT+8
+TZOFFSETTO:+0900
+RDATE:19910414T020000
+END:DAYLIGHT
+END:VTIMEZONE
+"""
+
+ICS_FOOTER = "END:VCALENDAR"
+
 requests.packages.urllib3.disable_warnings()
 
-def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
 	now_week = 0
 	classes = []
@@ -56,32 +85,6 @@ def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: provi
 			start_day += timedelta(days = 1)
 		weeks.append(single_week)
 
-	iCal = """BEGIN:VCALENDAR
-METHOD:PUBLISH
-VERSION:2.0
-X-WR-CALNAME:课表
-PRODID:-//Apple Inc.//macOS 11.2.3//EN
-X-APPLE-CALENDAR-COLOR:#711A76
-X-WR-TIMEZONE:Asia/Shanghai
-CALSCALE:GREGORIAN
-BEGIN:VTIMEZONE
-TZID:Asia/Shanghai
-BEGIN:STANDARD
-TZOFFSETFROM:+0900
-RRULE:FREQ=YEARLY;UNTIL=19910914T170000Z;BYMONTH=9;BYDAY=3SU
-DTSTART:19890917T020000
-TZNAME:GMT+8
-TZOFFSETTO:+0800
-END:STANDARD
-BEGIN:DAYLIGHT
-TZOFFSETFROM:+0800
-DTSTART:19910414T020000
-TZNAME:GMT+8
-TZOFFSETTO:+0900
-RDATE:19910414T020000
-END:DAYLIGHT
-END:VTIMEZONE"""
-
 	for _class in classes:
 		custom_geo = ""
 		cid, name, teacher, kind, raw_week, location, class_id, class_week, class_weekday, class_order = _class
@@ -113,8 +116,7 @@ END:VTIMEZONE"""
 
 			start_time = class_start_time.strftime('%Y%m%dT%H%M%S')
 			end_time = class_end_time.strftime('%Y%m%dT%H%M%S')
-			single_event = f"""
-BEGIN:VEVENT
+			single_event = f"""BEGIN:VEVENT
 DTEND;TZID=Asia/Shanghai:{end_time}
 DESCRIPTION:{description}
 UID:CQUPT-{hashlib.md5(str(str(class_id) + str(start_time) + str(end_time)).encode('utf-8')).hexdigest()}
@@ -124,10 +126,15 @@ X-APPLE-TRAVEL-ADVISORY-BEHAVIOR:AUTOMATIC
 SUMMARY:{title}
 CREATED:{runtime}
 DTSTART;TZID=Asia/Shanghai:{start_time}
-END:VEVENT"""
-			iCal += single_event
-	iCal += "\nEND:VCALENDAR"
-	return iCal
+END:VEVENT
+"""
+			yield single_event
 
+def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+	iCal = ICS_HEADER
+	for event in get_events(student_id=student_id, mode=mode, enable_geo=enable_geo, provider=provider, start_day=start_day):
+		iCal += event
+	iCal += ICS_FOOTER
+	return iCal
 	# if reporting:
 		# report(classes, runtime)

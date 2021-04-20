@@ -22,6 +22,16 @@ START_DAY = datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_
 
 app = Flask(__name__)
 
+def generate_stream_response(gen, first_event: str):
+	if first_event != None:
+		yield cqupt_ics.ICS_HEADER
+		yield first_event
+		for event in gen:
+			yield event
+		yield cqupt_ics.ICS_FOOTER
+	else:
+		yield ''
+
 @app.route("/<int:stu_id>.ics", methods=['GET'])
 def respond_ics(stu_id: int):
 	with_class = bool(int(request.args.get('class', True)))
@@ -43,12 +53,13 @@ def respond_ics(stu_id: int):
 	for provider in provider_list:
 		provider: providers.ProviderBaseType
 		try:
-			data = cqupt_ics.get_ics(student_id=stu_id, 
-							mode=((with_exam * cqupt_ics.ICS_EXAM) | (with_class * cqupt_ics.ICS_CLASS)), 
-							enable_geo=with_geo, 
-							provider=provider,
-							start_day=START_DAY)
-			return Response(response=data, mimetype="application/octet-stream")
+			gen = cqupt_ics.get_events(student_id=stu_id, 
+						mode=((with_exam * cqupt_ics.ICS_EXAM) | (with_class * cqupt_ics.ICS_CLASS)), 
+						enable_geo=with_geo, 
+						provider=provider,
+						start_day=START_DAY)
+			first_val = next(gen, None)
+			return Response(response=generate_stream_response(gen, first_val), mimetype="application/octet-stream")
 		except Exception as e:
 			err = e
 	return Response(status=503, response=err.args[0])

@@ -46,11 +46,13 @@ def main():
 
 	for provider in provider_list:
 		try:
-			data = cqupt_ics.get_ics(student_id=config.student_id, mode=mode, 
+			writer(cqupt_ics.ICS_HEADER)
+			for event in cqupt_ics.get_events(student_id=config.student_id, mode=mode, 
 								enable_geo=(not config.disable_geo), 
 								provider=provider,
-								start_day=datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_tuple[2]))
-			writer(data)
+								start_day=datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_tuple[2])):
+				writer(event)
+			writer(cqupt_ics.ICS_FOOTER)
 			err = None
 			break
 		except Exception as e:
