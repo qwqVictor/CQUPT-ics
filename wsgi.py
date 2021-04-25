@@ -30,6 +30,7 @@ def generate_stream_response(gen, first_event: str):
 			yield event
 		yield cqupt_ics.ICS_FOOTER
 	else:
+                # if first_event is None, there is nothing to output.
 		yield ''
 
 @app.route("/<int:stu_id>.ics", methods=['GET'])
@@ -58,6 +59,8 @@ def respond_ics(stu_id: int):
 						enable_geo=with_geo, 
 						provider=provider,
 						start_day=START_DAY)
+                        # get the first value of generator to trigger exception if would happen, which should be handled.
+                        # and if there is nothing thus the generator is empty, so a None value is needed.
 			first_val = next(gen, None)
 			return Response(response=generate_stream_response(gen, first_val), mimetype="application/octet-stream")
 		except Exception as e:
