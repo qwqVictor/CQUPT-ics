@@ -12,6 +12,9 @@ ENV STATIC_PATH /tmp
 # ENV STATIC_INDEX 1
 ENV STATIC_INDEX 0
 
+# Set timezone to Asia/Shanghai to correct start day of term
+ENV TZ=Asia/Shanghai
+
 # Add demo app
 COPY . /app
 WORKDIR /app
