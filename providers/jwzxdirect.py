@@ -49,8 +49,9 @@ class JWZXDirectProvider(ProviderBaseType):
 					continue
 				weekday += 1
 
-				class_divs: AdvancedHTMLParser.AdvancedTag = column.getElementsByClassName("kbTd")
+				class_divs: AdvancedHTMLParser.TagCollection = column.getElementsByClassName("kbTd")
 
+				class_div: AdvancedHTMLParser.AdvancedTag
 				for class_div in class_divs:
 					# sample: ['马保国', '必修', '6.0学分']
 					teacher, course_type, stu_point_raw = class_div.getElementsByXPath("//span[1]")[0].innerText.split(' ')
