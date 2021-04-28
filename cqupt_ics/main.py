@@ -85,6 +85,9 @@ def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: pr
 			start_day += timedelta(days = 1)
 		weeks.append(single_week)
 
+	if start_day == datetime(1970, 1, 1):
+		raise Exception("未能获取周次，请检查网络连通性或数据源故障")
+
 	for _class in classes:
 		custom_geo = ""
 		cid, name, teacher, kind, raw_week, location, class_id, class_week, class_weekday, class_order = _class
