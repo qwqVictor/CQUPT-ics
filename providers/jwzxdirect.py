@@ -114,7 +114,7 @@ class JWZXDirectProvider(ProviderBaseType):
 				course_data, now_week = JWZXDirectProvider._get_classes(document)
 				course = [
 						["CLASS", 
-							_Class["name"], _Class["teacher"], _Class["type"], _Class["raw_week"], _Class["location"], _Class["course_id"], _Class["weeks"], _Class["weekday"], 
+							_Class["name"], _Class["teacher"], _Class["type"], _Class["raw_week"], _Class["location"], _Class["class_id"], _Class["weeks"], _Class["weekday"], 
 							_Class["begin_end_time"]
 						] for _Class in course_data]
 			except:
