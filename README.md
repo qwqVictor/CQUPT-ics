@@ -8,6 +8,8 @@
 
 \-
 
+本程序最初由 [@junyilou](https://github.com/junyilou) 开发，原 Repo 位于 [junyilou/CQUPT-ics](https://github.com/junyilou/CQUPT-ics)。现版本主要由 [@qwqVictor](https://github.com/qwqVictor) 和 [@junyilou](https://github.com/junyilou) 共同维护。
+
 ## 为什么使用 iCal
 
 iCalendar 是广泛使用的日历数据交换标准，在诸如 Apple 日历、Google Calendar 的日历 app 中创建日历项，不仅可清晰的了解日程安排，更可体验 iOS、Android 系统为日历提供的各种功能：计划出行时间、日程提醒、如 Siri 与 Google Assistant 等智能语音助理自动化服务等。
@@ -21,6 +23,7 @@ iCalendar 是广泛使用的日历数据交换标准，在诸如 Apple 日历、
 本程序现支持多种数据源，当前已经接入的有：
 - 重庆邮电大学红岩网校开发的「掌上重邮」app 数据源  
 - 蓝山工作室开发的「We重邮」小程序数据源  
+- **CQUPT-ics 直接从教务在线抓取数据**（关于教务在线数据源的使用详见[文档](docs/jwzxdirect.md)）
 
 如果您是开发者，您也可以为本程序开发数据源，[点此](docs/providers.md)查看文档。
 
@@ -44,7 +47,7 @@ iCalendar 是广泛使用的日历数据交换标准，在诸如 Apple 日历、
 
 #### 支持对比课表之间的差异
 
-启用此功能后，运行将记录课表，稍后再次运行代码时将自动对比记录的课表与新获得的课表之间的差异，并生成一个 DIFF 差异页面，供你了解如教室、教师、周数的变化，轻松获得调停课信息。
+启用此功能后，运行将记录课表，稍后再次运行代码时将自动对比记录的课表与新获得的课表之间的差异，并生成一个 DIFF 差异页面，供你了解如教室、教师、周数的变化，轻松获得调停课信息。（该功能暂时搁置尚未实现）
 
 #### 自动获取本学期的校历信息
 
@@ -89,6 +92,8 @@ python3 cli.py -o cqupt.ics 2020xxxxxx
 python3 cli.py -o cqupt.ics 2020xxxxxx --start-day 2020-03-01
 ```
 
+若需要手动指定数据源，可以传入 `--provider` 参数，仅建议高级用户使用。可用的数据源列表详见 [providers/__init__.py](providers/__init__.py)。
+
 对于生成的 .ics 文件，通常只需打开即可导入（Windows、macOS、Android），对于 iOS 和 iPadOS 用户，需使用 AirDrop 将文件传到设备，或者想办法通过 Safari 浏览器访问此文件。
 
 \-
@@ -112,6 +117,7 @@ http://127.0.0.1:2021/2020xxxxxx.ics
  * `class`: 默认为 1，传入 0 可去除课程
  * `exam`: 默认为 1，传入 0 可去除考试信息
  * `geo`: 默认为 1，传入 0 可去除定位信息
+ * `provider`: 指定数据源
 
 **iOS 和 iPadOS 用户**：要添加日历订阅，请打开「设置」—「日历」—「账户」—「添加账户」—「其他」—「添加已订阅的日历」，然后在「服务器」中输入 ics 的 URL 地址。通过 Safari 直接打开 ics 的 URL 地址**只会导入**此日历中的全部日历项到已有的日历中，不会创建日历订阅。
 
