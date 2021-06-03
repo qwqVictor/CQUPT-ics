@@ -42,7 +42,7 @@ def main():
 			for key in providers.providers:
 				provider_list.append(providers.providers[key])
 	except:
-		sys.std.err.write("Invalid provider: " + config.provider)
+		sys.stderr.write("Invalid provider: " + config.provider)
 
 	for provider in provider_list:
 		try:
