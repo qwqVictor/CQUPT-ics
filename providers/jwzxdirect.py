@@ -21,7 +21,9 @@ class JWZXDirectProvider(ProviderBaseType):
 		return weeks
 
 	def _get_classes(document: AdvancedHTMLParser.AdvancedHTMLParser):
-		table_tab_div: AdvancedHTMLParser.AdvancedTag = document.getElementById("kbStuTabs-table").getElementsByClassName("printTable")[0]
+		table_tab_div: AdvancedHTMLParser.AdvancedTag
+		# Use kbBjTabs-table for class schedule
+		table_tab_div = document.getElementById("kbStuTabs-table").getElementsByClassName("printTable")[0]
 		form: AdvancedHTMLParser.AdvancedTag = table_tab_div.getElementsByXPath("//form")[0]
 		rows = table_tab_div.getElementsByXPath("//table[1]/tr")
 		now_week = 0
@@ -53,9 +55,13 @@ class JWZXDirectProvider(ProviderBaseType):
 
 				class_div: AdvancedHTMLParser.AdvancedTag
 				for class_div in class_divs:
-					# sample: ['马保国', '必修', '6.0学分']
-					teacher, course_type, stu_point_raw = class_div.getElementsByXPath("//span[1]")[0].innerText.split(' ')
-					stu_point = re.search("^(\\d+)?\\.\\d+", stu_point_raw).group(0)
+					# sample: ['Mike Kosgi', '必修', '6.0学分']
+					extra_raw = class_div.getElementsByXPath("//span[1]")[0].innerText
+					course_type = re.search("[必选]修", extra_raw).group(0)
+					stu_point = re.search("\\d?\\.\\d学分", extra_raw).group(0)
+					teacher = " ".join([i for i in extra_raw.split(" ") if i not in [course_type, stu_point]])
+					stu_point = stu_point.replace("学分", "").replace(".0", "0").replace(".5", "0.5")
+					
 					# div_texts contains course_id, class_id, location and raw_week
 					# div_texts sample: [('', 0), ('A15202AXXXXXXYYYY', 1), ('AXXXYYZZ-摸鱼学导论(上)', 3), ('地点：5400 \r\n\t\t\t', 5), ('1-16周', 7)]
 					div_texts = class_div.getBlocksText()
@@ -74,7 +80,7 @@ class JWZXDirectProvider(ProviderBaseType):
 					if continuous_info:
 						last_time = int(re.search("\\d+", continuous_info.group(0)).group(0))
 					begin_time = class_seq * 2 - 1
-					end_time = begin_time + last_time - 1
+					end_time = begin_time + last_time
 					data.append({
 						"course_id": course_id,
 						"class_id": class_id,
