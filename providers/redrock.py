@@ -3,7 +3,7 @@ import logging
 from providers.basetype import ProviderBaseType
 
 class RedrockProvider(ProviderBaseType):
-	APIROOT = "https://be-prod.redrock.team/magipoke-jwzx"
+	APIROOT = "https://be-prod.redrock.cqupt.edu.cn/magipoke-jwzx"
 	HEADERS = {"User-Agent": "zhang shang zhong you/6.1.1 (iPhone; iOS 14.6; Scale/3.00)"}
 
 	def class_schedule(student_id: int):
