@@ -74,6 +74,8 @@ python3 cli.py -o cqupt.ics 2020202020 --start-day 2020-03-01
 
 ### 服务器使用和日历订阅
 
+**什么是日历订阅？订阅日历和导入日历有什么区别？请参考[文档](docs/ImportOrSubscribe.md)。**
+
 对于进阶用户，你可能有自己的服务器，希望运行此代码，自动获得最新的课表并创建 iCalendar 订阅，这样，你的设备也将定期向服务器刷新课表，自动获得课表更新。
 
 本代码完全兼容服务端使用，经测试，**Apple 日历、Google Calendar、Outlook Calendar 均支持本代码生成的 ics**，同样也支持订阅本代码生成的 ics。
@@ -98,8 +100,8 @@ http://127.0.0.1:2021/2020xxxxxx.ics
 pip3 install -r requirements_server.txt
 ```
 
-**iOS 和 iPadOS 用户**：要添加日历订阅，请打开「设置」—「日历」—「账户」—「添加账户」—「其他」—「添加已订阅的日历」，然后在「服务器」中输入 ics 的 URL 地址。通过 Safari 直接打开 ics 的 URL 地址**只会导入**此日历中的全部日历项到已有的日历中，不会创建日历订阅。
+**要了解如何向 Apple 设备添加日历订阅，请参考[文档](docs/ImportOrSubscribe.md)。**
 
 ## 问题反馈与联系
 
-本程序最初由 [@junyilou](https://github.com/junyilou) 开发，原 Repo 位于 [junyilou/CQUPT-ics](https://github.com/junyilou/CQUPT-ics)。现版本主要由 [@qwqVictor](https://github.com/qwqVictor) 和 [@junyilou](https://github.com/junyilou) 共同维护。您可以直接提交 Issue，或通过 Telegram [@shunitsu](https://t.me/shunitsu) 或 [@qwqVictor](https://t.me/qwqVictor) 联系作者。
+本程序最初由 [@junyilou](https://github.com/junyilou) 开发，现版本主要由 [@qwqVictor](https://github.com/qwqVictor) 和 [@junyilou](https://github.com/junyilou) 共同维护。您可以直接提交 Issue，或通过 Telegram [@shunitsu](https://t.me/shunitsu) 或 [@qwqVictor](https://t.me/qwqVictor) 联系作者。
