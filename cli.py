@@ -22,7 +22,7 @@ def main():
 	f = None
 	if config.output != "-":
 		try:
-			f = open(config.output)
+			f = open(config.output, "w")
 			writer = f.write
 		except:
 			pass
