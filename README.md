@@ -76,6 +76,12 @@ python3 cli.py -o cqupt.ics 2020220202 --start-day 2020-03-01
 python3 cli.py --provider wecqupt 2020220202
 ```
 
+对于服务器端，您可以使用环境变量 `DEFAULT_PROVIDERS` 来指定加载的数据源和顺序，例如如果我们希望只依次序使用教务在线数据源和掌上重邮数据源，则可以这样执行：
+
+```
+DEFAULT_PROVIDERS=jwzxdirect,redrock python3 wsgi.py
+```
+
 您还可以为本程序开发新的数据源，详见[文档](docs/providers.md)。
 
 ### 服务器使用和日历订阅
@@ -111,3 +117,5 @@ pip3 install -r requirements_server.txt
 ## 问题反馈与联系
 
 本程序最初由 [@junyilou](https://github.com/junyilou) 开发，现版本主要由 [@qwqVictor](https://github.com/qwqVictor) 和 [@junyilou](https://github.com/junyilou) 共同维护。您可以直接提交 Issue，或通过 Telegram [@shunitsu](https://t.me/shunitsu) 或 [@qwqVictor](https://t.me/qwqVictor) 联系作者。
+
+本程序[以 MIT 许可协议](LICENSE)开放源代码。
