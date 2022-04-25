@@ -51,7 +51,7 @@ def respond_ics(stu_id: int):
 		if provider_name:
 			provider_list = [providers.providers[provider_name]]
 		else:
-			provider_list = DEFAULT_PROVIDER_LIST
+			provider_list = DEFAULT_PROVIDERS
 	except:
 		return Response(status=400, response="请求了无效的数据源")
 
