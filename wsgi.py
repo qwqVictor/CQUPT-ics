@@ -7,12 +7,17 @@ import providers
 from flask import Flask, request, Response
 from urllib.parse import unquote
 
-try:
-	START_DAY_STR = os.getenv("START_DAY") if os.getenv("START_DAY") else "1970-01-01"
-	PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 3000
-except:
-	START_DAY_STR = "1970-01-01"
-	PORT = 3000
+START_DAY_STR = os.getenv("START_DAY") if os.getenv("START_DAY") else "1970-01-01"
+PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 3000
+DEFAULT_PROVIDERS = [providers.providers[name] for name in os.getenv("DEFAULT_PROVIDERS").split(",") if name in providers.providers] \
+						if os.getenv("DEFAULT_PROVIDERS") else \
+						[providers.providers[name] for name in providers.providers]
+
+if len(DEFAULT_PROVIDERS) == 0:
+	print("配置的数据源无效！")
+	sys.exit(1)
+else:
+	print("已加载数据源：%s" % DEFAULT_PROVIDERS)
 
 start_day_tuple = ()
 for i in START_DAY_STR.split('-'):
@@ -44,10 +49,9 @@ def respond_ics(stu_id: int):
 	provider_list = []
 	try:
 		if provider_name:
-			provider_list.append(providers.providers[provider_name])
+			provider_list = [providers.providers[provider_name]]
 		else:
-			for key in providers.providers:
-				provider_list.append(providers.providers[key])
+			provider_list = DEFAULT_PROVIDER_LIST
 	except:
 		return Response(status=400, response="请求了无效的数据源")
 
