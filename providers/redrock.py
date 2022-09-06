@@ -5,10 +5,10 @@ from providers.basetype import ProviderBaseType
 class RedrockProvider(ProviderBaseType):
 	APIROOT = "https://be-prod.redrock.cqupt.edu.cn/magipoke-jwzx"
 	HEADERS = {"User-Agent": "zhang shang zhong you/6.1.1 (iPhone; iOS 14.6; Scale/3.00)"}
-	session = requests_html.AsyncHTMLSession(mock_browser=False)
 
 	async def class_schedule(student_id: int):
-		session = RedrockProvider.session
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data = {"stu_num": student_id}
 		try: 
@@ -22,8 +22,8 @@ class RedrockProvider(ProviderBaseType):
 			err_code = err.response.status_code
 			error_msg = f"课表请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
-		except:
-			error_msg = "课表请求发生了其他网络错误"
+		except Exception as e:
+			error_msg = f"课表请求发生了其他网络错误: {e}"
 			logging.debug(error_msg)
 		else:
 			try:
@@ -38,22 +38,23 @@ class RedrockProvider(ProviderBaseType):
 		return [], 0, error_msg
 
 	async def exam_schedule(student_id: int):
-		session = RedrockProvider.session
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data = {"stuNum": student_id}
 		try: 
 			r = await session.post(url = RedrockProvider.APIROOT + '/examSchedule', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
 			response_json = r.json()
-		except await requests_html.requests.exceptions.Timeout:
+		except requests_html.requests.exceptions.Timeout:
 			error_msg = "考试请求超时"
 			logging.debug(error_msg)
-		except await requests_html.requests.exceptions.HTTPError as err:
+		except requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"考试请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
-		except:
-			error_msg = "考试请求发生了其他网络错误"
+		except Exception as e:
+			error_msg = f"考试请求发生了其他网络错误: {e}"
 			logging.debug(error_msg)
 		else:
 			try:

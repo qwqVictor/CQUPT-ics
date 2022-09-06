@@ -12,10 +12,10 @@ class WeCQUPTProvider(ProviderBaseType):
 		"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.2(0x18000239) NetType/WIFI Language/zh_CN",
 		"Referer": "https://servicewechat.com/wx8227f55dc4490f45/89/page-frame.html",
 	}
-	session = requests_html.AsyncHTMLSession(mock_browser=False)
 
 	async def class_schedule(student_id: int):
-		session = WeCQUPTProvider.session
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
@@ -57,7 +57,8 @@ class WeCQUPTProvider(ProviderBaseType):
 		return [], 0, error_msg
 
 	async def exam_schedule(student_id: int):
-		session = WeCQUPTProvider.session
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
