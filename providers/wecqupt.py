@@ -15,7 +15,7 @@ class WeCQUPTProvider(ProviderBaseType):
 	}
 	OPENID = os.getenv("WE_OPENID")
 
-	async def class_schedule(student_id: int):
+	async def class_schedule(student_id: str):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
@@ -58,7 +58,7 @@ class WeCQUPTProvider(ProviderBaseType):
 			return course, response_json["data"]["week"], None
 		return [], 0, error_msg
 
-	async def exam_schedule(student_id: int):
+	async def exam_schedule(student_id: str):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""

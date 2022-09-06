@@ -42,7 +42,7 @@ async def generate_stream_response(gen, first_val: str):
 	yield cqupt_ics.ICS_FOOTER
 
 @app.get("/{stu_id}.ics")
-async def respond_ics(stu_id: int, request: Request):
+async def respond_ics(stu_id: str, request: Request):
 	with_class = bool(int(request.query_params.get('class', True)))
 	with_exam = bool(int(request.query_params.get('exam', True)))
 	with_geo = bool(int(request.query_params.get('geo', True)))

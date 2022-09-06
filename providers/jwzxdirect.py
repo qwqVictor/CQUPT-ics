@@ -96,7 +96,7 @@ class JWZXDirectProvider(ProviderBaseType):
 					})
 		return data, now_week
 
-	async def class_schedule(student_id: int, APIROOT: str = None):
+	async def class_schedule(student_id: str, APIROOT: str = None):
 		APIROOT = APIROOT if APIROOT else JWZXDirectProvider.APIROOT
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=True)
@@ -151,9 +151,10 @@ class JWZXDirectProvider(ProviderBaseType):
 			
 		return data
 
-	async def exam_schedule(student_id: int, no_need_to_get_week: bool = False, APIROOT: str = None):
+	async def exam_schedule(student_id: str, no_need_to_get_week: bool = False, APIROOT: str = None):
 		APIROOT = APIROOT if APIROOT else JWZXDirectProvider.APIROOT
-		session = requests_html.AsyncHTMLSession(loop=requests_html.asyncio.get_event_loop(), mock_browser=True)
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=True)
 		error_msg = ""
 		data = {"type": "stu", "id": student_id}
 		document = AdvancedHTMLParser.AdvancedHTMLParser()

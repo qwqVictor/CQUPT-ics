@@ -7,7 +7,8 @@ import cqupt_ics
 import providers
 
 parser = argparse.ArgumentParser(prog="CQUPT-ICS", description="Generate ICS file schedule of CQUPT")
-parser.add_argument("student_id", metavar="student_id", type=int, help="Your student ID number")
+parser.add_argument("student_id", metavar="student_id",
+                    type=str, help="Your student ID number")
 parser.add_argument("-o", "--output", type=str, help="Specify output file", default="-")
 parser.add_argument("--disable-exam", help="Disable exam information in ICS file", default=False, action='store_true')
 parser.add_argument("--disable-class", help="Disable class information in ICS file", default=False, action='store_true')

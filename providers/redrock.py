@@ -6,11 +6,11 @@ class RedrockProvider(ProviderBaseType):
 	APIROOT = "https://be-prod.redrock.cqupt.edu.cn/magipoke-jwzx"
 	HEADERS = {"User-Agent": "zhang shang zhong you/6.1.1 (iPhone; iOS 14.6; Scale/3.00)"}
 
-	async def class_schedule(student_id: int):
+	async def class_schedule(student_id: str):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
-		data = {"stu_num": student_id}
+		data = {"stu_num": int(student_id)}
 		try: 
 			r = await session.post(url = RedrockProvider.APIROOT + '/kebiao', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 1)
 			r.raise_for_status()
@@ -37,11 +37,11 @@ class RedrockProvider(ProviderBaseType):
 			return course, response_json["nowWeek"], None
 		return [], 0, error_msg
 
-	async def exam_schedule(student_id: int):
+	async def exam_schedule(student_id: str):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
-		data = {"stuNum": student_id}
+		data = {"stuNum": int(student_id)}
 		try: 
 			r = await session.post(url = RedrockProvider.APIROOT + '/examSchedule', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
