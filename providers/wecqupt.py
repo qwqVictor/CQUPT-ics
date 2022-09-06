@@ -3,6 +3,7 @@ import json
 import logging
 import time
 import requests_html
+import os
 from providers.basetype import ProviderBaseType
 
 class WeCQUPTProvider(ProviderBaseType):
@@ -12,12 +13,13 @@ class WeCQUPTProvider(ProviderBaseType):
 		"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.2(0x18000239) NetType/WIFI Language/zh_CN",
 		"Referer": "https://servicewechat.com/wx8227f55dc4490f45/89/page-frame.html",
 	}
+	OPENID = os.getenv("WE_OPENID")
 
 	async def class_schedule(student_id: int):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
-		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
+		data_raw = {"openid": WeCQUPTProvider.OPENID, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
 		try: 
 			r = await session.post(url = WeCQUPTProvider.APIROOT + '/get_kebiao.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 1)
@@ -60,7 +62,8 @@ class WeCQUPTProvider(ProviderBaseType):
 		session = requests_html.AsyncHTMLSession(
 			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
-		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
+		data_raw = {"openid": WeCQUPTProvider.OPENID,
+                    "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
 		try: 
 			r = await session.post(url = WeCQUPTProvider.APIROOT + '/get_ks.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 10)
