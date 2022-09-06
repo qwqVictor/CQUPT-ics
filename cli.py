@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import asyncio
 import datetime
 import sys
 import cqupt_ics
@@ -14,7 +15,7 @@ parser.add_argument("--disable-geo", help="Disable location data in ICS File", d
 parser.add_argument("--start-day", type=str, help="Specify the first Monday the term starts, in format YYYY-MM-dd. E.g: 1970-01-01", default="1970-01-01")
 parser.add_argument("--provider", type=str, help="Specify data provider")
 
-def main():
+async def main():
 	config = parser.parse_args()
 	writer = sys.stdout.write
 	provider_list = []
@@ -47,7 +48,7 @@ def main():
 	for provider in provider_list:
 		try:
 			writer(cqupt_ics.ICS_HEADER)
-			for event in cqupt_ics.get_events(student_id=config.student_id, mode=mode, 
+			async for event in cqupt_ics.get_events(student_id=config.student_id, mode=mode, 
 								enable_geo=(not config.disable_geo), 
 								provider=provider,
 								start_day=datetime.datetime(start_day_tuple[0], start_day_tuple[1], start_day_tuple[2])):
@@ -65,4 +66,5 @@ def main():
 		f.close()
 			
 if __name__ == "__main__":
-	main()
+	mainloop = asyncio.get_event_loop_policy().get_event_loop()
+	mainloop.run_until_complete(main())

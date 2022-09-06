@@ -25,13 +25,13 @@ ICS_FOOTER = "END:VCALENDAR"
 
 requests.packages.urllib3.disable_warnings()
 
-def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+async def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
 	now_week = 0
 	classes = []
 	error_msgs = []
 	if mode & ICS_CLASS:
-		classlist, now_week_raw, error_msg = provider.class_schedule(student_id)
+		classlist, now_week_raw, error_msg = await provider.class_schedule(student_id)
 		if error_msg != None:
 			logging.debug(error_msg)
 			error_msgs.append(error_msg)
@@ -39,7 +39,7 @@ def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: pr
 		classes += classlist
 		logging.debug(f"获得 {len(classlist)} 个课程{''.join([f'【{i[1]}】' for i in classlist])}\n")
 	if mode & ICS_EXAM:
-		classlist, now_week_raw, error_msg = provider.exam_schedule(student_id)
+		classlist, now_week_raw, error_msg = await provider.exam_schedule(student_id)
 		if error_msg != None:
 			logging.debug(error_msg)
 			error_msgs.append(error_msg)
@@ -50,7 +50,8 @@ def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: pr
 	if not len(classes):
 		if len(error_msgs):
 			raise Exception(", ".join(error_msgs))
-		return ''
+		yield ''
+		return
 
 	if now_week != 0:
 		date = datetime.now().date()
@@ -115,9 +116,9 @@ END:VEVENT
 """
 			yield single_event
 
-def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+async def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	iCal = ICS_HEADER
-	for event in get_events(student_id=student_id, mode=mode, enable_geo=enable_geo, provider=provider, start_day=start_day):
+	async for event in get_events(student_id=student_id, mode=mode, enable_geo=enable_geo, provider=provider, start_day=start_day):
 		iCal += event
 	iCal += ICS_FOOTER
 	return iCal
