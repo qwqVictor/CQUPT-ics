@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import time
-import requests
+import requests_html
 from providers.basetype import ProviderBaseType
 
 class WeCQUPTProvider(ProviderBaseType):
@@ -12,19 +12,21 @@ class WeCQUPTProvider(ProviderBaseType):
 		"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.2(0x18000239) NetType/WIFI Language/zh_CN",
 		"Referer": "https://servicewechat.com/wx8227f55dc4490f45/89/page-frame.html",
 	}
+	session = requests_html.AsyncHTMLSession(mock_browser=False)
 
-	def class_schedule(student_id: int):
+	async def class_schedule(student_id: int):
+		session = WeCQUPTProvider.session
 		error_msg = ""
 		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
 		try: 
-			r = requests.post(url = WeCQUPTProvider.APIROOT + '/get_kebiao.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 1)
+			r = await session.post(url = WeCQUPTProvider.APIROOT + '/get_kebiao.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 1)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except requests_html.requests.exceptions.Timeout:
 			error_msg = "课表请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"课表请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
@@ -54,18 +56,19 @@ class WeCQUPTProvider(ProviderBaseType):
 			return course, response_json["data"]["week"], None
 		return [], 0, error_msg
 
-	def exam_schedule(student_id: int):
+	async def exam_schedule(student_id: int):
+		session = WeCQUPTProvider.session
 		error_msg = ""
 		data_raw = {"openid": None, "id": str(student_id), "timestamp": int(time.time())}
 		data = {"key": base64.b64encode(json.dumps(data_raw).encode('utf-8')).decode('utf-8') }
 		try: 
-			r = requests.post(url = WeCQUPTProvider.APIROOT + '/get_ks.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 10)
+			r = await session.post(url = WeCQUPTProvider.APIROOT + '/get_ks.php', data = json.dumps(data), headers = WeCQUPTProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except session.exceptions.Timeout:
 			error_msg = "考试请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except session.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"考试请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)

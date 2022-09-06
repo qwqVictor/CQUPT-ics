@@ -1,5 +1,5 @@
 import os
-import requests
+import requests_html
 import logging
 import AdvancedHTMLParser
 import re
@@ -8,6 +8,7 @@ from providers.basetype import ProviderBaseType
 class JWZXDirectProvider(ProviderBaseType):
 	APIROOT = os.getenv("JWZX_APIROOT") if os.getenv("JWZX_APIROOT") else "http://jwzx.cqupt.edu.cn/"
 	HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"}
+	session = requests_html.AsyncHTMLSession(mock_browser=True)
 
 	def _get_weeks(mask: str):
 		# mask indicates which week involves the class
@@ -96,8 +97,9 @@ class JWZXDirectProvider(ProviderBaseType):
 					})
 		return data, now_week
 
-	def class_schedule(student_id: int, APIROOT: str = None):
+	async def class_schedule(student_id: int, APIROOT: str = None):
 		APIROOT = APIROOT if APIROOT else JWZXDirectProvider.APIROOT
+		session = JWZXDirectProvider.session
 		error_msg = ""
 		data = {"xh": student_id}
 		document = AdvancedHTMLParser.AdvancedHTMLParser()
@@ -149,8 +151,9 @@ class JWZXDirectProvider(ProviderBaseType):
 			
 		return data
 
-	def exam_schedule(student_id: int, no_need_to_get_week: bool = False, APIROOT: str = None):
+	async def exam_schedule(student_id: int, no_need_to_get_week: bool = False, APIROOT: str = None):
 		APIROOT = APIROOT if APIROOT else JWZXDirectProvider.APIROOT
+		session = JWZXDirectProvider.session
 		error_msg = ""
 		data = {"type": "stu", "id": student_id}
 		document = AdvancedHTMLParser.AdvancedHTMLParser()

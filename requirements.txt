@@ -1,2 +1,1 @@
-requests
-AdvancedHTMLParser
+requests-html

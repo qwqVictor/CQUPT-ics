@@ -1,22 +1,24 @@
-import requests
+import requests_html
 import logging
 from providers.basetype import ProviderBaseType
 
 class RedrockProvider(ProviderBaseType):
 	APIROOT = "https://be-prod.redrock.cqupt.edu.cn/magipoke-jwzx"
 	HEADERS = {"User-Agent": "zhang shang zhong you/6.1.1 (iPhone; iOS 14.6; Scale/3.00)"}
+	session = requests_html.AsyncHTMLSession(mock_browser=False)
 
-	def class_schedule(student_id: int):
+	async def class_schedule(student_id: int):
+		session = RedrockProvider.session
 		error_msg = ""
 		data = {"stu_num": student_id}
 		try: 
-			r = requests.post(url = RedrockProvider.APIROOT + '/kebiao', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 1)
+			r = await session.post(url = RedrockProvider.APIROOT + '/kebiao', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 1)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except requests_html.requests.exceptions.Timeout:
 			error_msg = "课表请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"课表请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
@@ -35,17 +37,18 @@ class RedrockProvider(ProviderBaseType):
 			return course, response_json["nowWeek"], None
 		return [], 0, error_msg
 
-	def exam_schedule(student_id: int):
+	async def exam_schedule(student_id: int):
+		session = RedrockProvider.session
 		error_msg = ""
 		data = {"stuNum": student_id}
 		try: 
-			r = requests.post(url = RedrockProvider.APIROOT + '/examSchedule', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 10)
+			r = await session.post(url = RedrockProvider.APIROOT + '/examSchedule', data = data, headers = RedrockProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except await requests_html.requests.exceptions.Timeout:
 			error_msg = "考试请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except await requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"考试请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
