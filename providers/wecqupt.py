@@ -6,6 +6,9 @@ import requests_html
 import os
 from providers.basetype import ProviderBaseType
 
+if os.getenv("WE_OPENID"):
+	print("已加载We重邮数据源ID: %s" % os.getenv("WE_OPENID"))
+
 class WeCQUPTProvider(ProviderBaseType):
 	APIROOT = "https://we.cqupt.edu.cn/api"
 	HEADERS = {
