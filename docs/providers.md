@@ -1,26 +1,30 @@
 本程序现在已经支持多种数据源以供使用，如果您愿意，也可以自行实现数据源类，您需要实现一个类似这样的类：
 
 ```python
+import requests_html
+
 class CustomProvider(ProviderBaseType):
 	APIROOT = "https://example.com/api"
 	HEADERS = {"Some-Header": "abaaba"}
 
-	def class_schedule(student_id: int):
+	async def class_schedule(student_id: str):
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data = {"id": student_id}
 		try: 
-			r = requests.post(url = CustomProvider.APIROOT + '/class', data = data, headers = CustomProvider.HEADERS, verify = False, timeout = 10)
+			r = await session.post(url = CustomProvider.APIROOT + '/class', data = data, headers = CustomProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except requests_html.requests.exceptions.Timeout:
 			error_msg = "课表请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"课表请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
-		except:
-			error_msg = "课表请求发生了其他网络错误"
+		except Exception as e:
+			error_msg = f"课表请求发生了其他网络错误: {e}"
 			logging.debug(error_msg)
 		else:
 			try:
@@ -34,22 +38,24 @@ class CustomProvider(ProviderBaseType):
 			return course, response_json["nowWeek"], None
 		return [], 0, error_msg
 
-	def exam_schedule(student_id: int):
+	async def exam_schedule(student_id: str):
+		session = requests_html.AsyncHTMLSession(
+			loop=requests_html.asyncio.get_event_loop(), mock_browser=False)
 		error_msg = ""
 		data = {"id": student_id}
 		try: 
-			r = requests.post(url = CustomProvider.APIROOT + '/exam', data = data, headers = CustomProvider.HEADERS, verify = False, timeout = 10)
+			r = await session.post(url = CustomProvider.APIROOT + '/exam', data = data, headers = CustomProvider.HEADERS, verify = False, timeout = 10)
 			r.raise_for_status()
 			response_json = r.json()
-		except requests.exceptions.Timeout:
+		except requests_html.requests.exceptions.Timeout:
 			error_msg = "考试请求超时"
 			logging.debug(error_msg)
-		except requests.exceptions.HTTPError as err:
+		except requests_html.requests.exceptions.HTTPError as err:
 			err_code = err.response.status_code
 			error_msg = f"考试请求返回了 HTTP {err_code} 错误"
 			logging.debug(error_msg)
-		except:
-			error_msg = "考试请求发生了其他网络错误"
+		except Exception as e:
+			error_msg = f"考试请求发生了其他网络错误: {e}"
 			logging.debug(error_msg)
 		else:
 			try:

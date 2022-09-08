@@ -1,5 +1,7 @@
 ## CQUPT-ics
 
+[![Build Container Image CI status](https://github.com/qwqVictor/CQUPT-ics/actions/workflows/build-images.yaml/badge.svg?branch=main)](https://github.com/qwqVictor/CQUPT-ics/actions/workflows/build-images.yaml)
+
 **重庆邮电大学学生课表 iCal (.ics) 自动生成工具。支持创建日历订阅，支持教学楼定位。**
 
 如果你非重庆邮电大学学生，请访问 [python-ical-timetable](https://github.com/junyilou/python-ical-timetable) 项目，可手动生成学生课表。
@@ -26,9 +28,9 @@
 
 #### 运行环境
 
-* 本代码需要使用 **Python 3**。
+* 本代码需要使用 **Python 3**，建议版本在 Python 3.7 以上。
 
-* 依赖 requests、AdvancedHTMLParser，可通过 pip 安装。
+* 在最近的更新中我们使用异步框架重构了程序，因此依赖 requests_html 和 asyncio，可通过 pip 安装。
 
   ```
   pip3 install -r requirements.txt
@@ -67,7 +69,7 @@ python3 cli.py -o cqupt.ics 2020220202 --start-day 2020-03-01
 本程序现支持多种课表数据源，当前已经接入的有：
 
 - `redrock` 重庆邮电大学红岩网校开发的「掌上重邮」app 数据源（默认）
-- `wecqupt` 蓝山工作室开发的「We重邮」小程序数据源（2022 年起，We重邮 开始认证请求课表的微信用户的小程序 OpenID，若未提供可能无法获取数据）
+- `wecqupt` 蓝山工作室开发的「We重邮」小程序数据源（2022 年起，We重邮 开始认证请求课表的微信用户的小程序 OpenID，若未提供可能无法获取数据，可使用 `WE_OPENID` 环境变量传入）
 - `jwzxdirect` 从教务在线直接爬取（关于教务在线数据源的使用详见[文档](docs/jwzxdirect.md)）
 
 您可以通过在指定 provider 参数修改使用的数据源，如：
@@ -94,7 +96,7 @@ DEFAULT_PROVIDERS=jwzxdirect,redrock python3 wsgi.py
 
 ![](images/subscribe.png)
 
-可运行 `wsgi.py` 或通过 uWSGI 运行此程序，亦可使用 Docker 镜像，随后便可直接在浏览器中请求日历文件，例如：
+可运行 `server.py` 或通过 Uvicorn 运行此程序，亦可使用 Docker 镜像，随后便可直接在浏览器中请求日历文件，例如：
 
 ```
 http://127.0.0.1:2021/2020xxxxxx.ics
@@ -106,7 +108,7 @@ http://127.0.0.1:2021/2020xxxxxx.ics
  * `geo`: 默认为 1，传入 0 可去除定位信息
  * `provider`: 指定数据源
 
-请留意服务端版依赖 flask，可通过 pip 安装。
+请留意服务端版依赖 FastAPI 和 Uvicorn，可通过 pip 安装。
 
 ```
 pip3 install -r requirements_server.txt

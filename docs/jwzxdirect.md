@@ -32,8 +32,7 @@ python3 cli.py --provider jwzxdirect 2020xxxxxx
 
 ### Docker 直接运行服务器版
 ```bash
-docker build -t cqupt_ics .
-docker run --name cqupt_ics -p 80:2021 -e JWZX_APIROOT="https://jwzx.fuck.cqupt.net" cqupt_ics
+docker run --name cqupt_ics -p 80:80 -e JWZX_APIROOT="https://jwzx.fuck.cqupt.net" ghcr.io/qwqvictor/cqupt_ics
 ```
 
 ### Docker-Compose 运行服务器版
