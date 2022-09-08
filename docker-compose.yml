@@ -1,8 +1,9 @@
 version: '3'
 services:
   web:
-    build: ./
+    image: ghcr.io/qwqvictor/cqupt-ics:latest
     ports: 
       - "2021:80"
     # environment:
     #   - JWZX_APIROOT="http://jwzx.cqupt.edu.cn"
+    #.  - WE_OPENID=""
