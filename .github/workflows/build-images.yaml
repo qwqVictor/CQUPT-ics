@@ -15,9 +15,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     steps:
     - uses: actions/checkout@v2
       name: Set Python Dependencies
