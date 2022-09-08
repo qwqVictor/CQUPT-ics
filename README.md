@@ -81,7 +81,7 @@ python3 cli.py --provider wecqupt 2020220202
 对于服务器端，您可以使用环境变量 `DEFAULT_PROVIDERS` 来指定加载的数据源和顺序，例如如果我们希望只依次序使用教务在线数据源和掌上重邮数据源，则可以这样执行：
 
 ```
-DEFAULT_PROVIDERS=jwzxdirect,redrock python3 wsgi.py
+DEFAULT_PROVIDERS=jwzxdirect,redrock python3 server.py
 ```
 
 您还可以为本程序开发新的数据源，详见[文档](docs/providers.md)。
