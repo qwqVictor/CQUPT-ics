@@ -33,4 +33,4 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/${REPO}:latest
+          ghcr.io/${{ env.REPO }}:latest
