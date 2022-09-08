@@ -10,20 +10,44 @@ ICS_CLASS = 1
 ICS_EXAM = 2
 ICS_ALL = ICS_CLASS | ICS_EXAM
 
-ICS_HEADER = """BEGIN:VCALENDAR
-METHOD:PUBLISH
-VERSION:2.0
-X-WR-CALNAME:课表
-X-WR-TIMEZONE:Asia/Shanghai
-CALSCALE:GREGORIAN
-BEGIN:VTIMEZONE
-TZID:Asia/Shanghai
-END:VTIMEZONE
+ICS_HEADER = """BEGIN:VCALENDAR\r
+METHOD:PUBLISH\r
+PRODID:-//CQUPT-ics//CN\r
+VERSION:2.0\r
+X-WR-CALNAME:课表\r
+X-WR-TIMEZONE:Asia/Shanghai\r
+CALSCALE:GREGORIAN\r
+BEGIN:VTIMEZONE\r
+TZID:Asia/Shanghai\r
+BEGIN:STANDARD\r
+TZOFFSETFROM:+0900\r
+RRULE:FREQ=YEARLY;UNTIL=19910914T150000Z;BYMONTH=9;BYDAY=3SU\r
+DTSTART:19890917T000000\r
+TZNAME:GMT+8\r
+TZOFFSETTO:+0800\r
+END:STANDARD\r
+BEGIN:DAYLIGHT\r
+TZOFFSETFROM:+0800\r
+DTSTART:19910414T000000\r
+TZNAME:GMT+8\r
+TZOFFSETTO:+0900\r
+RDATE:19910414T000000\r
+END:DAYLIGHT\r
+END:VTIMEZONE\r
 """
 
 ICS_FOOTER = "END:VCALENDAR"
 
 requests.packages.urllib3.disable_warnings()
+
+def fold_line(text: str):
+	ret = ""
+	# DESCRIPTION: length 12, 75-12-1=62
+	while len(text) >= 62:
+		ret += text[:62] + "\r\n"
+		text = " " + text[62:]
+	ret += text
+	return ret
 
 async def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
@@ -104,15 +128,15 @@ async def get_events(student_id: int, mode: int, enable_geo: bool = True, provid
 
 			start_time = class_start_time.strftime('%Y%m%dT%H%M%S')
 			end_time = class_end_time.strftime('%Y%m%dT%H%M%S')
-			single_event = f"""BEGIN:VEVENT
-DTEND;TZID=Asia/Shanghai:{end_time}
-DESCRIPTION:{description}
-UID:CQUPT-{hashlib.md5(str(str(class_id) + str(start_time) + str(end_time)).encode('utf-8')).hexdigest()}
-DTSTAMP:{runtime}
-URL;VALUE=URI:{custom_geo}
-SUMMARY:{title}
-DTSTART;TZID=Asia/Shanghai:{start_time}
-END:VEVENT
+			single_event = f"""BEGIN:VEVENT\r
+DTEND;TZID=Asia/Shanghai:{end_time}\r
+DESCRIPTION:{fold_line(description)}\r
+UID:CQUPT-{hashlib.md5(str(str(class_id) + str(start_time) + str(end_time)).encode('utf-8')).hexdigest()}\r
+DTSTAMP:{runtime}\r
+URL;VALUE=URI:{custom_geo}\r
+SUMMARY:{title}\r
+DTSTART;TZID=Asia/Shanghai:{start_time}\r
+END:VEVENT\r
 """
 			yield single_event
 
