@@ -158,7 +158,8 @@ class JWZXDirectProvider(ProviderBaseType):
 		now_week = 0
 		if not no_need_to_get_week:
 			try:
-				r = await session.get(url=APIROOT + "/ksap/index.php")
+				r = await session.get(url = APIROOT + '/kebiao/kb_stu.php', params = data, headers = JWZXDirectProvider.HEADERS, verify = False, timeout = 1)
+				r.raise_for_status()
 				now_week = int(re.search("\\d+", re.search("第 \\d+ 周 星期", r.text).group(0)).group(0))
 			except:
 				now_week = 0
