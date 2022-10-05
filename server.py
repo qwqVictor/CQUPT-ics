@@ -58,6 +58,7 @@ async def respond_ics(stu_id: str, request: Request):
 	except:
 		return Response(status_code=400, content="请求了无效的数据源")
 
+	err_message = None
 	for provider in provider_list:
 		provider: providers.ProviderBaseType
 		gen = cqupt_ics.get_events(student_id=stu_id,
@@ -71,9 +72,12 @@ async def respond_ics(stu_id: str, request: Request):
 		try:
 			first_val = await gen.__anext__()
 		except Exception as e:
-			raise HTTPException(status_code=503, detail=e.args[0])
+			err_message += f"${str(provider)}: ${e.args[0]}\n"
+			continue
 		content = generate_stream_response(gen, first_val)
 		return StreamingResponse(content)
+	if err:
+		raise HTTPException(503, detail=err_message)
 
 
 def main(argv=[]):

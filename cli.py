@@ -46,9 +46,12 @@ async def main():
 	except:
 		sys.stderr.write("Invalid provider: " + config.provider)
 
+	header_written = False
 	for provider in provider_list:
 		try:
-			writer(cqupt_ics.ICS_HEADER)
+			if not header_written:
+				writer(cqupt_ics.ICS_HEADER)
+				header_written = True
 			async for event in cqupt_ics.get_events(student_id=config.student_id, mode=mode, 
 								enable_geo=(not config.disable_geo), 
 								provider=provider,
@@ -59,6 +62,7 @@ async def main():
 			break
 		except Exception as e:
 			err = e
+			continue
 
 	if err:
 		sys.stderr.write("Exception occured: " + str(err.args[0]))
