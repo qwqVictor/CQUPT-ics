@@ -32,6 +32,14 @@ X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-TITLE=风雨操场(乒乓球馆)\\\\n\r
 		custom_geo = """LOCATION:重庆邮电学院篮球排球馆\\n崇文路2号重庆邮电大学内\r
 X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-TITLE=重庆邮电学院篮球排球馆\\\\n\r
  崇文路2号重庆邮电大学内:geo:29.534025,106.609148"""
+	elif "仙桃A08" in loc:
+		custom_geo = """LOCATION:重庆仙桃数据谷A08\\n中国重庆市渝北区金山大道仙桃国际大数据谷体验中心\r
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-TITLE=重庆仙桃数据谷A08\\\\n\r
+ 中国重庆市渝北区金山大道仙桃国际大数据谷体验中心:geo:29.739791,106.55661"""
+	elif "仙桃运动场" in loc:
+		custom_geo = """LOCATION:仙桃体育公园\\n中国重庆市渝北区金山大道仙桃国际大数据谷体验中心\r
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-TITLE=仙桃体育公园\\\\n\r
+ 中国重庆市渝北区仙桃街道数据谷东路仙桃国际数据谷内:geo:29.745789,106.55749""" 
 	elif room[0] == "1":
 		custom_geo = """LOCATION:重庆邮电大学-光电工程学院\\n崇文路2号重庆邮电大学内\r
 X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-TITLE=重庆邮电大学\r
