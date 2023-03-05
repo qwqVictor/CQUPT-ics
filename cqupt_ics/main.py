@@ -49,7 +49,7 @@ def fold_line(text: str):
 	ret += text
 	return ret
 
-async def get_events(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+async def get_events(student_id: str, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	runtime = datetime.now().strftime('%Y%m%dT%H%M%SZ')
 	now_week = 0
 	classes = []
@@ -140,7 +140,7 @@ END:VEVENT\r
 """
 			yield single_event
 
-async def get_ics(student_id: int, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
+async def get_ics(student_id: str, mode: int, enable_geo: bool = True, provider: providers.ProviderBaseType = providers.RedrockProvider, start_day: datetime = datetime(1970, 1, 1)):
 	iCal = ICS_HEADER
 	async for event in get_events(student_id=student_id, mode=mode, enable_geo=enable_geo, provider=provider, start_day=start_day):
 		iCal += event
